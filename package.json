@@ -1,0 +1,14 @@
+{
+  "name": "serverless-template",
+  "version": "1.0.0",
+  "description": "Serverless template using ECMA SCRIPT",
+  "main": "index.js",
+  "author": "Dilum Darshana",
+  "license": "MIT",
+  "devDependencies": {
+    "serverless": "^3.32.2"
+  },
+  "dependencies": {
+    "lambda-api": "^1.0.2"
+  }
+}
