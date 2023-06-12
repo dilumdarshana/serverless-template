@@ -5,10 +5,25 @@
   "main": "index.js",
   "author": "Dilum Darshana",
   "license": "MIT",
+  "scripts": {
+    "offline": "serverless offline start -r us-west-2 --noTimeout --stage dev"
+  },
   "devDependencies": {
-    "serverless": "^3.32.2"
+    "serverless": "^3.32.2",
+    "serverless-layers": "^2.6.1",
+    "serverless-offline": "^12.0.4",
+    "serverless-offline-ssm": "^6.2.0",
+    "serverless-plugin-tracing": "^2.0.0",
+    "serverless-prune-plugin": "^2.0.2"
   },
   "dependencies": {
     "lambda-api": "^1.0.2"
+  },
+  "imports": {
+    "#root/*": "./*.js",
+    "#src/*": "./src/*.js",
+    "#middlewares/*": "./src/middlewares/*.js",
+    "#functions/*": "./src/functions/*.js",
+    "#utils/*": "./src/utils/*.js"
   }
 }

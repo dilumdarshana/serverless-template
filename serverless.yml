@@ -1,0 +1,30 @@
+service: serverless-boilerplate
+
+frameworkVersion: '3'
+
+plugins:
+  - serverless-offline
+  - serverless-prune-plugin
+  - serverless-plugin-tracing
+  - serverless-layers
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: local
+  region: us-west-2
+  timeout: 30
+  memorySize: 512
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - ssm:*
+  environment:
+    ALLOWED_ORIGINS: ${ssm:/${opt:stage, self:provider.stage}/lambda/COMMON/ALLOWED_ORIGINS}
+
+custom:
+  serverless-offline-ssm:
+    stages:
+      - local
+    ssm:
+      '/local/lambda/TECHPATH/ALLOWED_ORIGINS': '*'
