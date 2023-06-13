@@ -17,6 +17,7 @@
     "serverless-prune-plugin": "^2.0.2"
   },
   "dependencies": {
+    "joi": "^17.9.2",
     "lambda-api": "^1.0.2"
   },
   "imports": {

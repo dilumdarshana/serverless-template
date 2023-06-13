@@ -3,6 +3,7 @@ service: serverless-boilerplate
 frameworkVersion: '3'
 
 plugins:
+  - serverless-offline-ssm
   - serverless-offline
   - serverless-prune-plugin
   - serverless-plugin-tracing
@@ -15,16 +16,21 @@ provider:
   region: us-west-2
   timeout: 30
   memorySize: 512
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - ssm:*
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action: ssm
+          Resource: '*'
+        - Effect: Allow
+          Action: s3
+          Resource: '*'
   environment:
     ALLOWED_ORIGINS: ${ssm:/${opt:stage, self:provider.stage}/lambda/COMMON/ALLOWED_ORIGINS}
 
 custom:
   serverless-offline-ssm:
     stages:
-      - local
+      - dev
     ssm:
-      '/local/lambda/TECHPATH/ALLOWED_ORIGINS': '*'
+      '/dev/lambda/COMMON/ALLOWED_ORIGINS': '*'

@@ -6,4 +6,6 @@ module.exports.load = (api) => {
       res.cors().send({});
     });
 
+    api.post('/common/status', healthChecker);
+
 };
