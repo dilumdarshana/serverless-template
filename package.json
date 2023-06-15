@@ -17,6 +17,8 @@
     "serverless-prune-plugin": "^2.0.2"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.352.0",
+    "aws-sdk": "^2.1397.0",
     "joi": "^17.9.2",
     "lambda-api": "^1.0.2"
   },

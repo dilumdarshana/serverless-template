@@ -2,7 +2,6 @@
  * Base controller
  */
 const { defaultReject, defaultResolve } = require('#utils/responseHelper');
-const { adminIntiateAuthRefreshToken } = require('#utils/cognitoHelper');
 
 /**
  *
