@@ -1,4 +1,4 @@
-
+const healthChecker = require('#functions/common/commonController');
 
 module.exports.load = (api) => {
     // for preflight
@@ -6,6 +6,6 @@ module.exports.load = (api) => {
       res.cors().send({});
     });
 
-    api.post('/common/status', healthChecker);
+    api.post('/common/status', healthChecker, null);
 
 };

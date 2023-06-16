@@ -33,14 +33,6 @@ const controller = async (req, res, params) => {
     // custom attributes which are not sent by the user
     const { requestContext: { authorizer: { lambda: extraData } = {} } } = req;
 
-    if (extraData && extraData.isUserLoggedOut) {
-      const refreshTokeExpireData = {
-        message: 'RefreshTokenExpired',
-        statusCode: 403,
-      };
-      return res.status(403).json(refreshTokeExpireData);
-    }
-
     const data = await params.service(attributes, extraData);
 
     return resolve(res, data);
