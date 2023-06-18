@@ -6,9 +6,9 @@ api.use(cors);
 routes.load(api);
 
 module.exports.run = async (event, context) => {
-    try {
-        return api.run(event, context);
-    } catch (err) {
-        throw new Error('Unknown error occurred, handler.js');
-    }
+  try {
+    return api.run(event, context);
+  } catch (err) {
+    throw new Error('Unknown error occurred, handler.js');
+  }
 };
