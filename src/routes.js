@@ -6,5 +6,8 @@ module.exports.load = (api) => {
     res.cors().send({});
   });
 
+  // common route
   api.post('/common/status', healthChecker, null);
+
+  // todo routes
 };

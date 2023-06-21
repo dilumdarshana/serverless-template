@@ -8,12 +8,16 @@
   "scripts": {
     "offline": "serverless offline start -r us-west-2 --noTimeout --stage dev",
     "lint": "eslint src",
-    "lint:fix": "eslint src --fix"
+    "lint:fix": "eslint src --fix",
+    "prepare": "husky install"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "echo \"[Huskyy] pre-commit\""
+      "pre-commit": "echo \"[Husky] pre-commit\""
     }
+  },
+  "lint-staged": {
+    "src/**/*.js": "yarn lint"
   },
   "devDependencies": {
     "eslint": "^8.43.0",
@@ -21,7 +25,7 @@
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-prettier": "^4.2.1",
-    "husky": "^8.0.3",
+    "husky": "^8.0.0",
     "lint-staged": "^13.2.2",
     "serverless": "^3.32.2",
     "serverless-layers": "^2.6.1",
