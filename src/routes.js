@@ -1,4 +1,4 @@
-const healthChecker = require('#functions/common/commonController');
+const { healthChecker } = require('#functions/common/commonController');
 
 module.exports.load = (api) => {
   // for preflight
@@ -7,7 +7,7 @@ module.exports.load = (api) => {
   });
 
   // common route
-  api.post('/common/status', healthChecker, null);
+  api.post('/common/status', healthChecker);
 
   // todo routes
 };
