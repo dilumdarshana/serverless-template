@@ -1,4 +1,5 @@
 const { healthChecker } = require('#functions/common/commonController');
+const { createTodo } = require('#functions/todo/todoController');
 
 module.exports.load = (api) => {
   // for preflight
@@ -10,4 +11,5 @@ module.exports.load = (api) => {
   api.post('/common/status', healthChecker);
 
   // todo routes
+  api.post('/todo', createTodo);
 };
