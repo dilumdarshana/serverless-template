@@ -1,4 +1,10 @@
-// const { DYNAMO_TABLE_TODO } = require('#utils/constants');
+const { DYNAMO_TABLE_TODO } = require('#utils/constants');
+const {
+  getCurrentTimestamp,
+} = require('#utils/commonHelper');
+const {
+  docClientPut,
+} = require('#utils/dynamoDbHelper');
 
 /**
  *
@@ -7,6 +13,17 @@
 const createTodo = async (data) => {
   try {
     const { task } = data;
+
+    const paramsPutTag = {
+      Item: {
+        task,
+        status: false,
+        created_at: getCurrentTimestamp(),
+      },
+      TableName: DYNAMO_TABLE_TODO,
+    };
+
+    await docClientPut(paramsPutTag);
 
     return {
       data: task,

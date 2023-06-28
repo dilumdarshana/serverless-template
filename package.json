@@ -8,8 +8,7 @@
   "scripts": {
     "offline": "serverless offline start -r us-west-2 --noTimeout --stage dev",
     "lint": "eslint src",
-    "lint:fix": "eslint src --fix",
-    "prepare": "husky install"
+    "lint:fix": "eslint src --fix"
   },
   "lint-staged": {
     "src/**/*.js": "yarn lint"
