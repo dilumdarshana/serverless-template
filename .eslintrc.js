@@ -3,11 +3,12 @@ module.exports = {
     browser: true,
     commonjs: true,
     es2021: true,
+    'jest/globals': true,
   },
   extends: [
     'airbnb-base',
   ],
-  plugins: ['prettier'],
+  plugins: ['prettier', 'jest'],
   parserOptions: {
     ecmaVersion: 2020,
   },
