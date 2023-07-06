@@ -9,7 +9,7 @@
     "offline": "serverless offline start -r us-west-2 --noTimeout --stage dev",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
-    "test:unit": "cross-env LOCAL=true LAMBDA_REGION=eu-west-2 LAMBDA_STAGE=dev jest --config jest.config.js"
+    "test:unit": "cross-env LOCAL=true LAMBDA_REGION=eu-west-2 LAMBDA_STAGE=dev jest --config jest.config.js --watchAll"
   },
   "lint-staged": {
     "src/**/*.js": "yarn lint"
