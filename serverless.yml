@@ -1,6 +1,6 @@
 service: serverless-template
 
-frameworkVersion: '3'
+frameworkVersion: "3"
 
 plugins:
   - serverless-offline-ssm
@@ -11,35 +11,71 @@ plugins:
 
 provider:
   name: aws
-  runtime: nodejs18.x
+  runtime: nodejs20.x
   stage: local
   region: us-west-2
   timeout: 30
   memorySize: 512
-  iam:
-    role:
-      statements:
-        - Effect: Allow
-          Action: 'ssm:*'
-          Resource: '*'
-        - Effect: Allow
-          Action: 's3:*'
-          Resource: '*'
-        - Effect: Allow
-          Action: 'dynamodb:*'
-          Resource: '*'
+  httpApi:
+    cors:
+      allowedOrigins: "*"
+      allowedHeaders:
+        - Content-Type
+        - X-Amz-Date
+        - Authorization
+        - refresh_token
+        - grant_type
+        - x-amz-security-token
+        - x-amz-user-agent
+        - x-amzn-trace-id
+        - X-Api-Key
+    authorizers:
+      customAuthorizer:
+        type: request
+        functionName: cAuthorizer
+        caching:
+          enabled: false
+        identitySource:
+          - $request.header.Authorization
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - ssm:*
+        - s3:*
+        - dynamodb:Query
+        - dynamodb:GetItem
+        - dynamodb:Scan
+        - dynamodb:BatchWriteItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+        - dynamodb:BatchGetItem
+        - ses:*
+        - cognito-idp:AdminInitiateAuth
+        - cognito-idp:AdminCreateUser
+        - cognito-idp:AdminSetUserPassword
+        - cognito-idp:AdminDeleteUser
+      Resource: "*"
   environment:
     ALLOWED_ORIGINS: ${ssm:/${opt:stage, self:provider.stage}/lambda/COMMON/ALLOWED_ORIGINS}
-
   deploymentBucket:
       name: sls-template-deployment-bucket-${opt:stage, self:provider.stage}
 
 custom:
+  headers:
+    Access-Control-Allow-Headers: "Content-Type,X-Amz-Date,Authorization,x-amz-security-token,x-amz-user-agent,x-amzn-trace-id,X-Api-Key,grant_type,refresh_token"
+  serverless-offline:
+    httpPort: 3000
+    host: 0.0.0.0
+    noAuth: true
   serverless-offline-ssm:
     stages:
-      - dev
+      - local
     ssm:
-      '/dev/lambda/COMMON/ALLOWED_ORIGINS': '*'
+      '/local/lambda/COMMON/ALLOWED_ORIGINS': "*"
+  prune:
+    automatic: true
+    number: 10
 
 functions:
   common:
@@ -60,6 +96,8 @@ functions:
       - httpApi:
           path: /v1/todo/{proxy+}
           method: any
+          authorizer:
+            name: customAuthorizer
 
 resources:
   Resources:
