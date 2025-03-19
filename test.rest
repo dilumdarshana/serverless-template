@@ -1,0 +1,12 @@
+POST http://localhost:3000/v1/common/status
+Content-Type: application/json
+Cache-Control: no-cache
+
+###
+POST http://localhost:3000/v1/todo
+Content-Type: application/json
+Cache-Control: no-cache
+
+{
+  "task": "Need to pay water bill"
+}

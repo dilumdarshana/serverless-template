@@ -18,7 +18,7 @@ const createTodo = async (data) => {
       Item: {
         task,
         status: false,
-        created_at: getCurrentTimestamp(),
+        createdAt: getCurrentTimestamp(),
       },
       TableName: DYNAMO_TABLE_TODO,
     };

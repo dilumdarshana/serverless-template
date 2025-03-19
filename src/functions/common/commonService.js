@@ -25,8 +25,8 @@ const status = async () => {
   return {
     message: 'success',
     data: {
-      server_time: new Date().toISOString(),
-      services_status: {
+      serverTime: new Date().toISOString(),
+      servicesStatus: {
         dynamodb: dynamoDbRes === 'error' ? 'failed' : 'connected',
       },
     },

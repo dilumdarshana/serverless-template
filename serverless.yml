@@ -7,7 +7,6 @@ plugins:
   - serverless-offline
   - serverless-prune-plugin
   - serverless-plugin-tracing
-  - serverless-layers
 
 provider:
   name: aws
