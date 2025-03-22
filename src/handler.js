@@ -14,4 +14,4 @@ module.exports.run = async (event, context) => {
   }
 };
 
-module.exports.tpAuthorizer = async (event) => doAuth(event);
+module.exports.cAuthorizer = async (event) => doAuth(event);

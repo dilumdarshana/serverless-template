@@ -1,23 +1,29 @@
+org: dilumdar
+
+app: test
+
 service: serverless-template
 
-frameworkVersion: "3"
+frameworkVersion: "4"
 
 plugins:
   - serverless-offline-ssm
   - serverless-offline
   - serverless-prune-plugin
   - serverless-plugin-tracing
+  - ./plugins/my-plugin.js
 
 provider:
   name: aws
-  runtime: nodejs20.x
+  runtime: nodejs22.x
   stage: local
   region: us-west-2
   timeout: 30
   memorySize: 512
   httpApi:
     cors:
-      allowedOrigins: "*"
+      allowedOrigins: 
+        - "*"
       allowedHeaders:
         - Content-Type
         - X-Amz-Date
@@ -32,35 +38,41 @@ provider:
       customAuthorizer:
         type: request
         functionName: cAuthorizer
-        caching:
-          enabled: false
+        # caching:
+        #   enabled: false
+        enableSimpleResponses: true
         identitySource:
           - $request.header.Authorization
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - ssm:*
-        - s3:*
-        - dynamodb:Query
-        - dynamodb:GetItem
-        - dynamodb:Scan
-        - dynamodb:BatchWriteItem
-        - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
-        - dynamodb:BatchGetItem
-        - ses:*
-        - cognito-idp:AdminInitiateAuth
-        - cognito-idp:AdminCreateUser
-        - cognito-idp:AdminSetUserPassword
-        - cognito-idp:AdminDeleteUser
-      Resource: "*"
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - ssm:*
+            - s3:*
+            - dynamodb:Query
+            - dynamodb:GetItem
+            - dynamodb:Scan
+            - dynamodb:BatchWriteItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+            - dynamodb:BatchGetItem
+            - ses:*
+            - cognito-idp:AdminInitiateAuth
+            - cognito-idp:AdminCreateUser
+            - cognito-idp:AdminSetUserPassword
+            - cognito-idp:AdminDeleteUser
+          Resource: "*"
   environment:
-    ALLOWED_ORIGINS: ${ssm:/${opt:stage, self:provider.stage}/lambda/COMMON/ALLOWED_ORIGINS}
+    ALLOWED_ORIGINS: ${ssm:/${param:stage, self:provider.stage}/lambda/COMMON/ALLOWED_ORIGINS}
   deploymentBucket:
-      name: sls-template-deployment-bucket-${opt:stage, self:provider.stage}
+    name: sls-template-deployment-bucket-${param:stage, self:provider.stage}
 
 custom:
+  deploymentBucket:
+    versioning: true
+    encryption: AES256
   headers:
     Access-Control-Allow-Headers: "Content-Type,X-Amz-Date,Authorization,x-amz-security-token,x-amz-user-agent,x-amzn-trace-id,X-Api-Key,grant_type,refresh_token"
   serverless-offline:
@@ -80,7 +92,7 @@ functions:
   common:
     handler: src/handler.run
     description: Routing event to common APIs
-    tracing: true
+    tracing: Active
     architecture: arm64
     events:
       - httpApi:
@@ -89,7 +101,7 @@ functions:
   todo:
     handler: src/handler.run
     description: Routing event to todo APIs
-    tracing: true
+    tracing: Active
     architecture: arm64
     events:
       - httpApi:
@@ -97,13 +109,16 @@ functions:
           method: any
           authorizer:
             name: customAuthorizer
+  cAuthorizer:
+    handler: src/handler.cAuthorizer
+    description: Lambda custom authorizer
 
 resources:
   Resources:
     StatusTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: application-status-${opt:stage, self:provider.stage}
+        TableName: application-status-${param:stage, self:provider.stage}
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: N
@@ -118,7 +133,7 @@ resources:
     TodoTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: todo-${opt:stage, self:provider.stage}
+        TableName: todo-${param:stage, self:provider.stage}
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: N
