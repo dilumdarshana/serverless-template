@@ -73,6 +73,12 @@ custom:
   deploymentBucket:
     versioning: true
     encryption: AES256
+    tags:
+      - Key: Environment
+        Value: ${param:stage, self:provider.stage}
+      # - Key: Service
+      #   Value: ${self:service}
+
   headers:
     Access-Control-Allow-Headers: "Content-Type,X-Amz-Date,Authorization,x-amz-security-token,x-amz-user-agent,x-amzn-trace-id,X-Api-Key,grant_type,refresh_token"
   serverless-offline:

@@ -75,8 +75,11 @@ class MyPlugin {
 
   async checkBucketVersionExists() {
     try {
-      await this.provider.request('S3', 'getBucketVersioning', this.bucketParams);
-      return true;
+      const res = await this.provider.request('S3', 'getBucketVersioning', this.bucketParams);
+      if (res.Status && res.Status === 'Enabled') {
+        return true;
+      }
+      return false;
     } catch (e) {
       return false;
     }
@@ -94,11 +97,44 @@ class MyPlugin {
     this.serverless.cli.log(`Deployment bucket '${this.bucketParams.Bucket}' versioning updated.`);
   }
 
+  // check bucket tags changed compare with previous set
+  async checkBucketTagsChanged(tags) {
+    this.serverless.cli.log('Comparing bucket tags.');
+    try {
+      const res = await this.provider.request('S3', 'getBucketTagging', this.bucketParams);
+
+      if (JSON.stringify(res.TagSet) === JSON.stringify(tags)) {
+        return false;
+      }
+      return true;
+    } catch (e) {
+      return true;
+    }
+  }
+
+  async updateBucketTags(tags) {
+    if (tags.length) {
+      const params = {
+        ...this.bucketParams,
+        Tagging: {
+          TagSet: tags,
+        },
+      };
+
+      await this.provider.request('S3', 'putBucketTagging', params);
+      this.serverless.cli.log(`Tags: ${tags.map((elm) => elm.Key).join(',')} created`);
+    } else {
+      await this.provider.request('S3', 'deleteBucketTagging', this.bucketParams);
+      this.serverless.cli.log('All tags removed');
+    }
+  }
+
   async createDeploymentBucket() {
     // Get bucket name from serverless.yml configuration
     const bucketName = this.serverless.service.provider.deploymentBucket || '';
     const bucketProperties = this.serverless.service.custom.deploymentBucket;
     const bucketVersioning = bucketProperties.versioning || false;
+    const bucketTags = bucketProperties.tags || [];
 
     if (!bucketName) {
       this.serverless.cli.log('No deployment bucket provided.');
@@ -110,8 +146,6 @@ class MyPlugin {
     }
 
     try {
-      this.serverless.cli.log(`Checkign if the deployment bucket ${bucketName} exists`);
-
       // check if bucket already exists
       if (await this.bucketExists(bucketName)) {
         this.serverless.cli.log(`Deployment bucket '${bucketName}' already exists.`);
@@ -121,20 +155,19 @@ class MyPlugin {
       }
 
       // add bucket versioning if needed
-      if (bucketVersioning) {
-        const hasVersioning = await this.checkBucketVersionExists();
-        console.log('com', hasVersioning);
-
-        if (!hasVersioning) {
-          console.log('inside');
-          await this.createBucketVersioning(bucketVersioning);
-        }
+      if (await this.checkBucketVersionExists() !== bucketVersioning) {
+        /// await this.createBucketVersioning(bucketVersioning);
 
         this.serverless.cli.log(`Versioning ${bucketVersioning ? 'Enabled' : 'Disabled'} on bucket ${bucketName}`);
       }
 
+      // add encryption
 
 
+      // add tags
+      if (await this.checkBucketTagsChanged(bucketTags)) {
+        await this.updateBucketTags(bucketTags);
+      }
     } catch (error) {
       this.serverless.cli.log(`Error creating deployment bucket: ${error.message}`);
       throw error;
